@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档</title>
+    <!-- 引入 Bootstrap 样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./styles/header.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="Demo(within Fold).html">初版</a></li>
+                <li><a href="test002.html">初版（Bookstrap）</a></li>
+                <li><a href="index.html">完整版</a></li>
+                <li><a href="Bookstrap(Fold).html">完整版（Bookstrap）</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div id="app" class="container mt-5">
+        <div class="mb-3">
+            <!-- 输入框 -->
+            <input type="text" v-model="todo" @keyup.enter="addTodos" class="form-control" placeholder="输入">
+        </div>
+        <ul class="list-group">
+            <!-- 循环渲染待办事项 -->
+            <todo-item v-for="(item,index) in todos" :key="index" title="选项：" :content="item" :index="index"
+                @delete="delTodo(index)" class="list-group-item">{{item}}</todo-item>
+        </ul>
+    </div>
+
+    <!-- 待办事项模板 -->
+    <template id="todo">
+        <li class="list-group-item">
+            <!-- 点击删除待办事项 -->
+            <span @click="delContent">{{title}}{{content}}</span>
+        </li>
+    </template>
+
+    <!-- 引入 Vue.js 及相关脚本 -->
+    <script src="https://unpkg.com/vue@3.0.11/dist/vue.global.prod.js"></script>
+    <script>
+        // 待办事项组件
+        const todoItem = {
+            template: '#todo',
+            props: ['title', 'content', 'index'],
+            methods: {
+                // 删除待办事项
+                delContent() {
+                    let itemID = this.index + 1;
+                    if (!confirm('是否确认删除itemID为' + itemID + '的记录')) {
+                        return;
+                    }
+                    this.$emit('delete', this.index);
+                }
+            }
+        };
+
+        // 根组件
+        const RootComp = {
+            data() {
+                return {
+                    todo: '', // 待办事项内容
+                    todos: [], // 待办事项列表
+                    showTodos: true
+                };
+            },
+            methods: {
+                // 添加待办事项
+                addTodos() {
+                    this.todos.push(this.todo);
+                    this.todo = '';
+                },
+                // 删除待办事项
+                delTodo(index) {
+                    this.todos.splice(index, 1);
+                }
+            }
+        };
+
+        // 创建 Vue 应用
+        const vueApp = Vue.createApp(RootComp);
+        // 注册待办事项组件
+        vueApp.component('todoItem', todoItem);
+        // 挂载 Vue 应用到 HTML 元素
+        vueApp.mount('#app');
+    </script>
+</body>
+
+</html>
